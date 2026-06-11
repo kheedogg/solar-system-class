@@ -47,7 +47,10 @@ html, body {
 }
 .page-header h1 {
   margin: 0;
-  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.15;
+  word-break: keep-all;       /* don't split Korean words mid-character */
+  overflow-wrap: break-word;
   text-shadow: 0 0 18px rgba(255, 213, 74, .5);
 }
 .page-header h1 .ko { font-size: .8em; opacity: .85; }
@@ -76,14 +79,15 @@ html, body {
 main {
   position: relative;
   z-index: 1;
-  display: flex;
-  justify-content: center;
+  display: block;   /* block + margin:auto on inner panels = predictable widths
+                       (flex made views size to content and overflow on phones) */
   padding: 1rem;
 }
 .solar-system {
   position: relative;
   width: min(92vw, 760px);
   height: min(92vw, 760px);
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -652,8 +656,8 @@ body.motion-paused .stars { animation-play-state: paused; }
   gap: .35rem;
   margin: 1rem auto .3rem;
   padding: .35rem;
-  width: max-content;
-  max-width: 94vw;
+  width: fit-content;   /* shrink to content, but wrap (not max-content, which won't wrap) */
+  max-width: min(94vw, 100%);
   background: rgba(255,255,255,.05);
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 999px;
@@ -774,7 +778,7 @@ body.motion-paused .stars { animation-play-state: paused; }
 .sky-scene {
   position: relative;
   width: min(92vw, 720px);
-  height: min(58vw, 420px);
+  height: min(72vw, 420px);
   margin: 0 auto;
   border-radius: 24px;
   overflow: hidden;
@@ -917,9 +921,34 @@ body.motion-paused .stars { animation-play-state: paused; }
 
 /* ---- Responsive ---- */
 @media (max-width: 560px) {
+  html, body { overflow-x: hidden; }     /* clip the wide solar map horizontally */
+  main { padding: 1rem .5rem; }
+
+  .page-header { padding: 1rem .6rem .3rem; }
+  .page-header h1 { font-size: 1.35rem; }
+  .subtitle { font-size: .82rem; }
+
+  /* Nav as a tidy 2×2 grid so it never overflows on phones */
+  .view-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .35rem;
+    width: 100%;
+    max-width: 340px;
+    border-radius: 18px;
+  }
+  .nav-btn { justify-content: center; padding: .55rem .6rem; font-size: .92rem; }
   .nav-btn .nav-en { display: none; }
-  .nav-btn { padding: .5rem .8rem; }
+
   .sky-body { width: 46px; height: 46px; font-size: 34px; }
+
+  /* Worksheet: anchor width to the viewport (92vw) so it can't overflow,
+     one card per row on phones */
+  #view-worksheet, .worksheet { width: min(92vw, 860px); max-width: 92vw; }
+  .ws-sheet { padding: 1.1rem .9rem; max-width: 100%; }
+  .ws-heading { font-size: 1.05rem; overflow-wrap: break-word; }
+  .ws-heading .ko { display: block; }   /* Korean drops to its own line so it never overflows */
+  .ws-grid { grid-template-columns: 1fr; }
 }
 
 /* ---- Reduced-motion: Phase 4 ---- */

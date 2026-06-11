@@ -77,9 +77,22 @@
 
     currentView = name;
     if (name === "sky") activateSky();
+
+    // Keep the URL hash in sync so views are bookmarkable / deep-linkable
+    if (location.hash.replace("#", "") !== name) location.hash = name;
   }
 
   navBtns.forEach((b) => b.addEventListener("click", () => showView(b.dataset.view)));
+
+  // Deep links: #constellations, #sky, #worksheet (handy on the projector)
+  const viewFromHash = () => {
+    const h = (location.hash || "").replace("#", "");
+    return views[h] ? h : null;
+  };
+  window.addEventListener("hashchange", () => {
+    const v = viewFromHash();
+    if (v) showView(v);
+  });
 
   /* =========================================================
      ⭐ Constellations
@@ -315,4 +328,8 @@
 
   const printBtn = document.getElementById("ws-print");
   if (printBtn) printBtn.addEventListener("click", () => window.print());
+
+  // Open a deep-linked view on first load (e.g. .../#sky)
+  const initialView = viewFromHash();
+  if (initialView && initialView !== "solar") showView(initialView);
 })();
