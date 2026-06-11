@@ -1,37 +1,45 @@
 # 🪐 The Solar System / 태양계
 
-An interactive, **bilingual (English / Korean)** solar system page made for an elementary classroom.
-Planets orbit the Sun, and clicking any planet (or the Sun) shows kid-friendly facts in both languages.
+An interactive, **bilingual (English / Korean)** space lesson made for an elementary classroom.
+It has **four views**, and clicking any object (planet, Sun, Moon, comet, constellation…) opens
+kid-friendly facts in both languages.
 
 ## 🌍 Live page
 **https://kheedogg.github.io/solar-system-class/**
 
-Open it in any web browser — no installation needed. Works great on a classroom projector or on tablets.
+Open it in any web browser — no installation needed. Great on a classroom projector or on tablets.
 
-## ✨ Features
-- 8 planets animated in orbit around a glowing Sun
-- Click a planet → a popup with simple facts (English + 한국어)
-- A **Pause orbits / 멈추기** button to freeze the animation while teaching
+## 🖼️ The four views
+1. **🪐 Solar System / 태양계** — Planets orbit the Sun.
+   - **Scroll or pinch to zoom** in and out (🔍 Reset zoom to go back).
+   - Includes the **Moon, Pluto (dwarf planet), the asteroid belt, and a comet** — all clickable.
+   - **📏 Real scale** button shows the planets' approximate real sizes and distances.
+   - **⏸️ Pause** button to freeze the orbits while you teach.
+2. **🌅 Sky from Earth / 지구에서 보기** — Drag the slider (or press ▶️) to watch **day turn to night**: the Sun rises and sets, then the Moon and stars come out.
+3. **⭐ Constellations / 별자리** — Famous constellations (Big Dipper, Cassiopeia, Orion, Leo). Click one to learn how to find it.
+4. **🖨️ Worksheet / 학습지** — Prints a clean black-and-white handout with a fact card and a drawing space for each planet.
+
+> ✏️ **Note:** Pictures are for learning — sizes, distances, and star positions are simplified, not exact.
+
+## ✨ Other features
+- Bilingual everywhere (English + 한국어)
+- Shooting stars in the background
 - Respects the device's "reduce motion" accessibility setting
-- No dependencies, no build step — just open `index.html`
 
-## ✏️ How to edit the planet facts (for the teacher)
-All the content lives in one place: the **`PLANETS`** array at the top of [`script.js`](script.js).
-Each planet looks like this:
+## ✏️ How to edit the content (for the teacher)
+All the words kids see live in **data arrays** at the top of [`script.js`](script.js):
+`PLANETS`, `EARTH_MOON`, `COMET`, `ASTEROIDS`, `SUN`, and `CONSTELLATIONS`.
+Each fact is a simple English/Korean pair:
 
 ```js
-{
-  name: "Earth", nameKo: "지구", emoji: "🌍", color: "#4a90d9", size: 28, orbit: 175, speed: 16,
-  facts: [
-    { en: "Our home planet!", ko: "우리가 사는 행성이에요!" }
-  ]
-}
+{ en: "Our home planet!", ko: "우리가 사는 행성이에요!" }
 ```
 
-To change a fact, edit the `en` (English) and `ko` (Korean) text. To add a fact, add another `{ en: "...", ko: "..." }` line. Save the file and refresh the page.
+Edit the text (or add another `{ en, ko }` line), save, and refresh. To publish your changes,
+commit and push — the live page updates in about a minute.
 
 ## 🖥️ Running it locally
-Just open `index.html` in a browser. Or, from this folder:
+Just open `index.html` in a browser, or from this folder:
 
 ```bash
 python3 -m http.server 8000
