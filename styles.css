@@ -639,3 +639,291 @@ body.motion-paused .stars { animation-play-state: paused; }
   .answer-btn,
   .quiz-tts-btn { animation: none !important; }
 }
+
+/* =====================================================================
+   Phase 4 — multi-view navigation + Constellations / Sky / Worksheet
+   ===================================================================== */
+
+/* ---- Top navigation (pill tabs) ---- */
+.view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .35rem;
+  margin: 1rem auto .3rem;
+  padding: .35rem;
+  width: max-content;
+  max-width: 94vw;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+  padding: .5rem .95rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: .92rem;
+  line-height: 1;
+  transition: background .2s ease, color .2s ease, transform .12s ease, box-shadow .2s ease;
+}
+.nav-btn .ko { font-size: .82em; color: #b9e0ff; }
+.nav-btn:hover { background: rgba(255,255,255,.1); }
+.nav-btn:active { transform: scale(.96); }
+.nav-btn.is-active {
+  background: linear-gradient(180deg, #ffe27a, var(--accent));
+  color: #3a2a00;
+  box-shadow: 0 4px 16px rgba(255,213,74,.35);
+}
+.nav-btn.is-active .ko { color: #6a4f00; }
+
+/* ---- View container + entrance transition ---- */
+.view[hidden] { display: none; }
+.view {
+  animation: view-in .32s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.view-hint {
+  text-align: center;
+  opacity: .85;
+  margin: .1rem auto 1.1rem;
+  font-size: clamp(.9rem, 2.6vw, 1.05rem);
+}
+
+/* Generic pill button reused by Sky / Worksheet tools */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+  padding: .5rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .9rem;
+  color: var(--text);
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.22);
+  transition: background .2s ease, transform .12s ease;
+}
+.chip:hover { background: rgba(255,255,255,.2); }
+.chip:active { transform: scale(.96); }
+.chip .ko { font-size: .85em; color: #b9e0ff; }
+
+/* ---- ⭐ Constellations ---- */
+.constellation-sky {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: min(92vw, 720px);
+  margin: 0 auto;
+}
+.constellation-tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 30% 18%, rgba(70,95,180,.28), transparent 60%),
+    linear-gradient(180deg, rgba(13,16,48,.92), rgba(5,6,15,.96));
+  box-shadow: 0 10px 30px rgba(0,0,0,.4), inset 0 0 44px rgba(40,60,140,.15);
+  transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.constellation-tile:hover,
+.constellation-tile:focus-visible {
+  outline: none;
+  transform: translateY(-4px);
+  border-color: rgba(255,213,74,.55);
+  box-shadow: 0 16px 42px rgba(0,0,0,.5), 0 0 26px rgba(255,213,74,.2), inset 0 0 44px rgba(40,60,140,.22);
+}
+.constellation-svg { width: 100%; height: 78%; display: block; }
+.c-line { stroke: rgba(180,205,255,.5); stroke-width: .7; stroke-linecap: round; }
+.c-star {
+  fill: #fff;
+  filter: drop-shadow(0 0 3px rgba(180,210,255,.95));
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: c-twinkle 2.6s ease-in-out infinite alternate;
+}
+@keyframes c-twinkle { from { opacity: .6; } to { opacity: 1; } }
+.constellation-label {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: .55rem .5rem .65rem;
+  text-align: center;
+  font-size: 1rem;
+  background: linear-gradient(transparent, rgba(5,6,15,.88));
+}
+.constellation-label .ko { font-size: .82em; }
+
+/* ---- 🌅 Sky from Earth ---- */
+.sky-scene {
+  position: relative;
+  width: min(92vw, 720px);
+  height: min(58vw, 420px);
+  margin: 0 auto;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 16px 50px rgba(0,0,0,.5);
+  background: linear-gradient(to bottom, #3d7fd0, #cfe9ff);
+  transition: background .15s linear;
+}
+.sky-stars {
+  position: absolute; inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 60% 28%, #fff, transparent),
+    radial-gradient(1px 1px at 82% 14%, #cfe, transparent),
+    radial-gradient(1px 1px at 35% 40%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 48% 10%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 36%, #ffd, transparent),
+    radial-gradient(1px 1px at 25% 8%, #fff, transparent);
+}
+.sky-body {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 54px; height: 54px;
+  border: none; background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 42px; line-height: 1;
+  display: grid; place-items: center;
+  filter: drop-shadow(0 0 16px rgba(255,200,90,.6));
+  transition: left .15s linear, top .15s linear, opacity .3s ease, transform .12s ease;
+}
+.sky-moon { filter: drop-shadow(0 0 14px rgba(200,220,255,.65)); }
+.sky-body:hover { transform: translate(-50%, -50%) scale(1.12); }
+.sky-ground {
+  position: absolute;
+  left: -6%; right: -6%; bottom: -7%;
+  height: 26%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, #3f8a55, #244d33);
+  box-shadow: 0 -4px 22px rgba(0,0,0,.28);
+}
+.sky-time-label {
+  position: absolute;
+  top: .7rem; left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 1rem;
+  color: #fff;
+  background: rgba(5,6,15,.4);
+  backdrop-filter: blur(6px);
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+.sky-time-label .ko { font-size: .85em; }
+.sky-controls { width: min(92vw, 720px); margin: 1.1rem auto 0; text-align: center; }
+.sky-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd54a, #3a4db0 55%, #05060f);
+  outline: none; cursor: pointer;
+}
+.sky-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #ffd54a);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  cursor: pointer;
+}
+.sky-slider::-moz-range-thumb {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #ffd54a);
+  border: 2px solid #fff; cursor: pointer;
+}
+.sky-control-row { margin: .85rem 0 .5rem; }
+.sky-note { opacity: .9; font-size: .95rem; margin: .2rem 0 0; }
+.sky-note b { color: var(--accent); }
+.sky-note .ko { color: #b9e0ff; }
+
+/* ---- 🖨️ Worksheet ---- */
+.worksheet { width: min(92vw, 860px); margin: 0 auto; }
+.ws-toolbar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 1rem;
+  margin-bottom: 1rem;
+}
+.ws-tip { opacity: .7; font-size: .85rem; }
+.ws-sheet {
+  background: #fff; color: #14142a;
+  border-radius: 16px;
+  padding: 1.6rem 1.4rem;
+  box-shadow: 0 16px 50px rgba(0,0,0,.5);
+}
+.ws-heading { text-align: center; margin: .2rem 0 1.3rem; font-size: 1.5rem; color: #1a1a2e; }
+.ws-heading .ko { color: #3a4db0; font-size: .8em; }
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.ws-card {
+  display: flex; flex-direction: column;
+  border: 2px solid #cfd6e6;
+  border-radius: 12px;
+  padding: .85rem;
+}
+.ws-name { margin: 0 0 .6rem; font-size: 1.1rem; color: #1a1a2e; }
+.ws-name .ko { color: #3a4db0; font-size: .82em; }
+.ws-draw {
+  display: grid; place-items: center;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #b6c0d6;
+  border-radius: 10px;
+  color: #9aa6c0;
+  font-size: 1.6rem;
+}
+.ws-draw span { display: block; font-size: .68rem; margin-top: .25rem; }
+.ws-fact { font-size: .8rem; color: #3a3a4a; margin: .65rem 0 .5rem; line-height: 1.35; }
+.ws-fact .ko { color: #3a4db0; }
+.ws-write { height: 1.4rem; border-bottom: 1.5px solid #c8d0e0; margin-top: auto; }
+
+/* ---- Print: show only the worksheet, black on white ---- */
+@media print {
+  body { background: #fff !important; color: #000; }
+  .stars, .page-header, .page-footer, .motion-btn,
+  .fab-container, .quiz-overlay, .overlay, .details,
+  .sky-controls, .ws-toolbar { display: none !important; }
+  main { padding: 0; }
+  .view:not(#view-worksheet) { display: none !important; }
+  #view-worksheet { display: block !important; }
+  .ws-sheet { box-shadow: none; border-radius: 0; padding: 0; }
+  .ws-card { break-inside: avoid; }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 560px) {
+  .nav-btn .nav-en { display: none; }
+  .nav-btn { padding: .5rem .8rem; }
+  .sky-body { width: 46px; height: 46px; font-size: 34px; }
+}
+
+/* ---- Reduced-motion: Phase 4 ---- */
+@media (prefers-reduced-motion: reduce) {
+  .view { animation: none !important; }
+  .c-star { animation: none !important; }
+}
