@@ -6,6 +6,10 @@
   <title>The Solar System / 태양계</title>
   <meta name="description" content="An interactive, bilingual (English/Korean) solar system page for elementary students." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Jua (주아체): a rounded, friendly font that's cute but still clean —
+       renders both Korean and English nicely. -->
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🪐</text></svg>" />
 </head>
@@ -43,6 +47,35 @@
   <footer class="page-footer">
     <p>Made for our class 🌟 우리 반을 위해 만들었어요</p>
   </footer>
+
+  <!-- ── Phase 2: FAB (Floating Action Button) ── -->
+  <!-- The FAB sits in the bottom-right corner. Tap 🚀 to open the menu,
+       then tap "Quiz" to start the quiz game. -->
+  <div class="fab-container" id="fab-container">
+    <div class="fab-menu" id="fab-menu" hidden>
+      <button class="fab-item" id="fab-quiz" type="button">
+        🧠 Quiz <span class="ko">퀴즈</span>
+      </button>
+    </div>
+    <button class="fab-btn" id="fab-btn" type="button" aria-label="Games / 게임" aria-expanded="false">
+      🚀
+    </button>
+  </div>
+
+  <!-- ── Phase 2: Quiz overlay ── -->
+  <!-- Full-screen overlay: same dark-backdrop pattern as the details dialog. -->
+  <div class="quiz-overlay" id="quiz-overlay" hidden>
+    <div class="quiz-panel" role="dialog" aria-modal="true" aria-label="Quiz / 퀴즈">
+      <div class="quiz-header">
+        <span class="quiz-progress" id="quiz-progress">1 / 8</span>
+        <span class="quiz-score" id="quiz-score">⭐ 0</span>
+        <button class="close-btn quiz-close" id="quiz-close" type="button" aria-label="Close / 닫기">✕</button>
+      </div>
+      <div class="quiz-body" id="quiz-body">
+        <!-- Dynamically populated by JS -->
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

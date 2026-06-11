@@ -12,7 +12,8 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  font-family: "Trebuchet MS", "Segoe UI", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: "Jua", "Trebuchet MS", "Segoe UI", "Apple SD Gothic Neo", system-ui, sans-serif;
+  letter-spacing: .2px;
   color: var(--text);
   background: radial-gradient(ellipse at top, var(--bg-mid) 0%, var(--bg-deep) 60%);
   overflow-x: hidden;
@@ -53,13 +54,15 @@ html, body {
 .subtitle { margin: .4rem 0 0; opacity: .85; font-size: clamp(.9rem, 2.5vw, 1.1rem); }
 .ko { color: #b9e0ff; }
 
+/* Motion button: min-height 48px meets touch target guidelines */
 .motion-btn {
   margin-top: .9rem;
   background: rgba(255,255,255,.1);
   color: var(--text);
   border: 1px solid rgba(255,255,255,.25);
   border-radius: 999px;
-  padding: .5rem 1.1rem;
+  padding: .7rem 1.1rem;
+  min-height: 48px;
   font-size: .9rem;
   cursor: pointer;
   transition: background .2s;
@@ -86,12 +89,12 @@ main {
   justify-content: center;
 }
 
-/* The Sun in the center */
+/* The Sun in the center — 80px keeps proportion with the tighter scaled orbits */
 .sun {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 90px; height: 90px;
+  width: 80px; height: 80px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -114,6 +117,10 @@ main {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: orbit-spin linear infinite;
+  /* The orbit's square bounding box must not eat clicks meant for inner
+     planets — the largest ring (Neptune) is rendered last and would
+     otherwise cover every planet beneath it. Only the planet stays clickable. */
+  pointer-events: none;
 }
 @keyframes orbit-spin {
   from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -128,10 +135,27 @@ main {
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  pointer-events: auto; /* re-enable clicks (parent .orbit is pointer-events:none) */
   padding: 0;
   box-shadow: inset -4px -4px 8px rgba(0,0,0,.45);
   transition: transform .15s ease, box-shadow .2s ease;
   animation: planet-upright linear infinite;
+}
+
+/* Transparent tap-target expander: guarantees a 48px minimum
+   tappable area for every planet (important for touch / small screens).
+   Visual appearance is unchanged — only the hit area grows. */
+.planet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 48px;
+  min-height: 48px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 @keyframes planet-upright {
   from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -189,15 +213,16 @@ main {
   from { opacity: 0; transform: translate(-50%, -46%) scale(.94); }
   to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
+/* Close button: 48x48px meets touch target guidelines */
 .close-btn {
   position: absolute;
   top: .8rem; right: .9rem;
   background: rgba(255,255,255,.12);
   border: none;
   color: var(--text);
-  width: 34px; height: 34px;
+  width: 48px; height: 48px;
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
 }
 .close-btn:hover { background: rgba(255,255,255,.25); }
@@ -215,9 +240,84 @@ main {
 .facts li .fact-en { display: block; font-weight: 600; }
 .facts li .fact-ko { display: block; color: #b9e0ff; font-size: .92rem; margin-top: .15rem; }
 
+/* ---------- TTS (Text-to-Speech) buttons ---------- */
+
+/* "Read All" button sits above the facts list */
+.tts-read-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: .8rem;
+  padding: .55rem 1rem;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: .95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .2s;
+}
+.tts-read-all:hover { background: rgba(255,255,255,.18); }
+.tts-read-all.reading {
+  background: rgba(255, 213, 74, .18);
+  border-color: rgba(255, 213, 74, .45);
+}
+
+/* Brief gold flash when "Read All" finishes reading all facts */
+@keyframes read-done-flash {
+  0%   { background: rgba(255, 213, 74, .35); box-shadow: 0 0 12px rgba(255, 213, 74, .4); }
+  100% { background: rgba(255,255,255,.1);    box-shadow: none; }
+}
+.tts-read-all.done {
+  animation: read-done-flash 0.8s ease-out forwards;
+}
+
+/* Per-fact speaker button — sits on the right edge of each fact card */
+.tts-btn {
+  flex-shrink: 0;
+  /* 36px visual size, padded out to 48px tap target */
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  margin: -6px 0 -6px 12px;
+  background: rgba(255,255,255,.1);
+  border: none;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .2s;
+}
+.tts-btn:hover { background: rgba(255,255,255,.22); }
+
+/* Pulsing animation while a fact is being read aloud */
+@keyframes speak-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1;   }
+  50%       { transform: scale(1.15); opacity: 0.8; }
+}
+.tts-btn.speaking {
+  animation: speak-pulse 0.6s ease-in-out infinite;
+  background: rgba(255, 213, 74, .25);
+}
+
+/* Make each fact list item flex so the speaker button sits on the right */
+.facts li {
+  display: flex;
+  align-items: center;
+}
+.facts li .fact-text {
+  flex: 1;
+}
+
 /* ---------- Accessibility: respect reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .orbit, .planet, .sun, .stars { animation: none !important; }
+  /* Also disable the TTS pulse so it doesn't distract users who prefer no motion */
+  .tts-btn.speaking { animation: none; }
 }
 /* Class toggled by the Pause button */
 body.motion-paused .orbit,
@@ -227,6 +327,315 @@ body.motion-paused .stars { animation-play-state: paused; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 480px) {
-  .sun { width: 64px; height: 64px; }
+  .sun { width: 57px; height: 57px; }
   .planet .label { font-size: .6rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — FAB (Floating Action Button) + Quiz Game
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ---------- FAB container ---------- */
+/* Fixed to bottom-right; slides in on page load */
+.fab-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 15;             /* above solar system (5) but below overlays (20) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  animation: fab-enter .5s .4s ease both; /* slight delay so page loads first */
+}
+@keyframes fab-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- FAB main button (🚀) ---------- */
+.fab-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #05060f;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(255, 213, 74, .45);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.fab-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 26px rgba(255, 213, 74, .65);
+}
+.fab-btn:active { transform: scale(.95); }
+
+/* ---------- FAB menu (expands upward) ---------- */
+.fab-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  animation: fab-menu-in .18s ease;
+}
+@keyframes fab-menu-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Individual menu item button */
+.fab-item {
+  white-space: nowrap;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  padding: .6rem 1.1rem;
+  min-height: 48px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  transition: background .18s;
+}
+.fab-item:hover { background: rgba(255,255,255,.18); }
+.fab-item .ko { color: #b9e0ff; font-size: .88em; }
+
+/* ---------- Quiz overlay (full-screen dark backdrop) ---------- */
+.quiz-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+/* Hide with display:none while `hidden` attribute is set;
+   the `hidden` attribute is toggled by JS */
+.quiz-overlay[hidden] { display: none; }
+
+/* ---------- Quiz panel (the white-ish card) ---------- */
+.quiz-panel {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 24px;
+  padding: 1.4rem 1.4rem 1.8rem;
+  width: min(96vw, 500px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 70px rgba(0,0,0,.65);
+  animation: pop-in .25s ease;  /* reuses existing pop-in keyframe */
+  position: relative;
+}
+
+/* ---------- Quiz header row (progress / score / close) ---------- */
+.quiz-header {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.2rem;
+}
+.quiz-progress {
+  font-size: 1rem;
+  font-weight: 700;
+  opacity: .8;
+  flex: 1;
+}
+.quiz-score {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+/* Reuse .close-btn from the existing details dialog */
+.quiz-close {
+  position: static;      /* override absolute from base .close-btn */
+  flex-shrink: 0;
+}
+
+/* ---------- Quiz question area ---------- */
+.quiz-emoji {
+  font-size: 3.8rem;
+  text-align: center;
+  margin: .2rem 0 .8rem;
+  line-height: 1;
+}
+.quiz-question {
+  text-align: center;
+  margin: 0 0 1rem;
+}
+.quiz-question .q-en {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.quiz-question .q-ko {
+  display: block;
+  font-size: 1rem;
+  color: #b9e0ff;
+  margin-top: .3rem;
+  line-height: 1.35;
+}
+
+/* TTS button inline with question */
+.quiz-tts-btn {
+  display: block;
+  margin: 0 auto .9rem;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: .9rem;
+  padding: .35rem .9rem;
+  min-height: 40px;
+  cursor: pointer;
+  transition: background .18s;
+}
+.quiz-tts-btn:hover { background: rgba(255,255,255,.2); }
+.quiz-tts-btn.speaking {
+  animation: speak-pulse .6s ease-in-out infinite;
+  background: rgba(255,213,74,.2);
+}
+
+/* ---------- Answer buttons ---------- */
+.quiz-answers {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.answer-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 16px;
+  border: 2px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.07);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  padding: .7rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.3;
+  transition: background .15s, border-color .15s, transform .15s, opacity .25s;
+}
+/* Give the three buttons slightly different accent tints */
+.answer-btn:nth-child(1) { border-color: rgba(140, 200, 255, .3); }
+.answer-btn:nth-child(2) { border-color: rgba(180, 140, 255, .3); }
+.answer-btn:nth-child(3) { border-color: rgba(140, 255, 180, .3); }
+.answer-btn:hover:not(:disabled) { background: rgba(255,255,255,.15); transform: translateY(-2px); }
+.answer-btn .ans-en { display: block; font-weight: 700; }
+.answer-btn .ans-ko { display: block; font-size: .88em; color: #b9e0ff; margin-top: .1rem; }
+
+/* Correct answer: gold glow + bounce */
+@keyframes correct-bounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  70%  { transform: scale(.97); }
+  100% { transform: scale(1); }
+}
+.answer-btn.correct {
+  background: rgba(255, 213, 74, .22) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 18px rgba(255,213,74,.5);
+  animation: correct-bounce .4s ease;
+}
+
+/* Wrong answer: red-tinted shake */
+@keyframes wrong-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(4px); }
+}
+.answer-btn.wrong {
+  border-color: rgba(255, 100, 100, .6) !important;
+  animation: wrong-shake .25s ease;
+  opacity: .45;
+}
+
+/* Feedback text below answers */
+.quiz-feedback {
+  text-align: center;
+  min-height: 1.6rem;
+  margin-top: .75rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.quiz-feedback.ok  { color: var(--accent); animation: correct-bounce .35s ease; }
+.quiz-feedback.err { color: #ff9090; }
+
+/* ---------- Result screen ---------- */
+.quiz-result {
+  text-align: center;
+  padding: .5rem 0 .5rem;
+}
+.result-header {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: .3rem;
+  animation: correct-bounce .5s ease;
+}
+.result-ko {
+  color: #b9e0ff;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+.result-stars {
+  font-size: 2.4rem;
+  letter-spacing: .1em;
+  margin-bottom: .5rem;
+}
+.result-score-text {
+  font-size: 1rem;
+  margin-bottom: .3rem;
+  opacity: .9;
+}
+.result-msg {
+  font-size: .95rem;
+  color: #b9e0ff;
+  margin-bottom: 1.4rem;
+}
+.result-btn-primary {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  border-radius: 16px;
+  border: none;
+  background: var(--accent);
+  color: #05060f;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: .7rem;
+  transition: transform .15s, box-shadow .15s;
+}
+.result-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,213,74,.4); }
+.result-btn-secondary {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+  font-size: .95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .18s;
+}
+.result-btn-secondary:hover { background: rgba(255,255,255,.16); }
+
+/* ---------- Reduced-motion safety net ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fab-container,
+  .fab-menu,
+  .answer-btn,
+  .quiz-tts-btn { animation: none !important; }
 }
