@@ -4,7 +4,6 @@
   --text: #f4f6ff;
   --accent: #ffd54a;
   --panel: rgba(16, 20, 48, 0.95);
-  --ko-color: #b9e0ff;
 }
 
 * { box-sizing: border-box; }
@@ -18,7 +17,6 @@ html, body {
   background: radial-gradient(ellipse at top, var(--bg-mid) 0%, var(--bg-deep) 60%);
   overflow-x: hidden;
 }
-.ko { color: var(--ko-color); }
 
 /* Twinkling star field */
 .stars {
@@ -39,80 +37,45 @@ html, body {
 }
 @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
 
-/* Shooting stars layer */
-.shooting-stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.shooting-stars .meteor {
-  position: absolute;
-  width: 120px; height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,0), #fff);
-  border-radius: 2px;
-  filter: drop-shadow(0 0 6px #fff);
-  transform: rotate(20deg);
-  animation: shoot linear forwards;
+/* ---------- Header / footer ---------- */
+.page-header, .page-footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 1.4rem 1rem 0.4rem;
 }
-@keyframes shoot {
-  from { opacity: 0; transform: translate(0,0) rotate(20deg); }
-  10%  { opacity: 1; }
-  to   { opacity: 0; transform: translate(-520px, 200px) rotate(20deg); }
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  text-shadow: 0 0 18px rgba(255, 213, 74, .5);
 }
+.page-header h1 .ko { font-size: .8em; opacity: .85; }
+.subtitle { margin: .4rem 0 0; opacity: .85; font-size: clamp(.9rem, 2.5vw, 1.1rem); }
+.ko { color: #b9e0ff; }
 
-/* ---------- Header / nav / footer ---------- */
-.page-header, .page-footer { position: relative; z-index: 2; text-align: center; padding: 1.2rem 1rem 0.4rem; }
-.page-header h1 { margin: 0; font-size: clamp(1.6rem, 4.5vw, 2.6rem); text-shadow: 0 0 18px rgba(255, 213, 74, .5); }
-.page-header h1 .ko { font-size: .8em; opacity: .9; }
-
-.view-nav { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1rem; }
-.nav-btn {
-  background: rgba(255,255,255,.08);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,.22);
-  border-radius: 999px;
-  padding: .5rem 1rem;
-  font-size: .9rem;
-  cursor: pointer;
-  transition: background .2s, transform .1s;
-}
-.nav-btn .ko { font-size: .82em; }
-.nav-btn:hover { background: rgba(255,255,255,.18); }
-.nav-btn.is-active { background: var(--accent); color: #20160a; border-color: var(--accent); font-weight: 700; }
-.nav-btn.is-active .ko { color: #4a3a14; }
-
-.page-footer { padding-bottom: 2rem; opacity: .85; font-size: .85rem; }
-.page-footer .note { opacity: .7; font-size: .78rem; }
-
-.hint { text-align: center; opacity: .8; margin: .3rem 0 .6rem; font-size: clamp(.8rem, 2.4vw, 1rem); }
-.caption { text-align: center; opacity: .9; line-height: 1.5; margin: 1rem auto 0; max-width: 540px; }
-
-/* ---------- View show / hide ---------- */
-main { position: relative; z-index: 1; padding: .5rem 1rem 1rem; }
-.view { display: none; }
-.view.is-active { display: block; }
-
-.view-tools { text-align: center; }
-.tool-buttons { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; margin-bottom: .4rem; }
-.chip {
+.motion-btn {
+  margin-top: .9rem;
   background: rgba(255,255,255,.1);
   color: var(--text);
   border: 1px solid rgba(255,255,255,.25);
   border-radius: 999px;
-  padding: .45rem 1rem;
-  font-size: .85rem;
+  padding: .5rem 1.1rem;
+  font-size: .9rem;
   cursor: pointer;
   transition: background .2s;
 }
-.chip .ko { font-size: .85em; }
-.chip:hover { background: rgba(255,255,255,.2); }
-.chip[aria-pressed="true"] { background: rgba(255, 213, 74, .25); border-color: var(--accent); }
-.scale-caption { text-align: center; color: var(--accent); font-weight: 600; margin: .2rem 0 .4rem; }
+.motion-btn:hover { background: rgba(255,255,255,.2); }
+.motion-btn .ko { font-size: .85em; }
 
-/* ---------- Solar system + zoom ---------- */
-.zoom-viewport {
+.page-footer { padding-bottom: 2rem; opacity: .8; }
+
+/* ---------- Solar system ---------- */
+main {
   position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  touch-action: none;
+  padding: 1rem;
 }
 .solar-system {
   position: relative;
@@ -121,29 +84,34 @@ main { position: relative; z-index: 1; padding: .5rem 1rem 1rem; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transform-origin: center center;
-  transition: transform .12s ease-out;
 }
 
 /* The Sun in the center */
 .sun {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 90px; height: 90px; border-radius: 50%; border: none; cursor: pointer;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
   background: radial-gradient(circle at 35% 35%, #fff6c4, #ffcf33 45%, #ff9d00 80%);
   box-shadow: 0 0 40px 10px rgba(255, 170, 0, .7), 0 0 90px 30px rgba(255, 120, 0, .35);
   z-index: 5;
   animation: sun-pulse 4s ease-in-out infinite alternate;
 }
-.sun .body-emoji { font-size: 0; }
+.sun .body-emoji { font-size: 0; } /* visually the gradient is the sun */
 @keyframes sun-pulse {
   from { box-shadow: 0 0 40px 10px rgba(255,170,0,.6), 0 0 80px 26px rgba(255,120,0,.3); }
   to   { box-shadow: 0 0 55px 16px rgba(255,190,0,.85), 0 0 110px 40px rgba(255,120,0,.4); }
 }
 
-/* Orbit rings spin; the planet on the ring counter-rotates to stay upright */
+/* Each orbit is a centered ring; the planet sits on the ring edge and the ring rotates */
 .orbit {
-  position: absolute; top: 50%; left: 50%;
-  border: 1px dashed rgba(255,255,255,.14); border-radius: 50%;
+  position: absolute;
+  top: 50%; left: 50%;
+  border: 1px dashed rgba(255,255,255,.14);
+  border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: orbit-spin linear infinite;
 }
@@ -151,11 +119,18 @@ main { position: relative; z-index: 1; padding: .5rem 1rem 1rem; }
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+/* The planet button counter-rotates so its label stays upright */
 .planet {
-  position: absolute; top: 50%; left: 100%; transform: translate(-50%, -50%);
-  border: none; border-radius: 50%; cursor: pointer; padding: 0;
+  position: absolute;
+  top: 50%; left: 100%;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
   box-shadow: inset -4px -4px 8px rgba(0,0,0,.45);
-  transition: box-shadow .2s ease;
+  transition: transform .15s ease, box-shadow .2s ease;
   animation: planet-upright linear infinite;
 }
 @keyframes planet-upright {
@@ -167,97 +142,47 @@ main { position: relative; z-index: 1; padding: .5rem 1rem 1rem; }
   box-shadow: inset -4px -4px 8px rgba(0,0,0,.45), 0 0 0 4px rgba(255,255,255,.5);
 }
 .planet .label {
-  position: absolute; top: 110%; left: 50%; transform: translateX(-50%);
-  white-space: nowrap; font-size: .72rem; color: var(--text);
-  text-shadow: 0 1px 3px #000; pointer-events: none; opacity: .9;
+  position: absolute;
+  top: 110%; left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: .72rem;
+  color: var(--text);
+  text-shadow: 0 1px 3px #000;
+  pointer-events: none;
+  opacity: .9;
 }
-/* A small moon attached to a planet */
-.moon-mini {
-  position: absolute; border-radius: 50%; cursor: pointer; border: none; padding: 0;
-  background: radial-gradient(circle at 35% 30%, #fff, #c9c9d6 60%);
-  box-shadow: inset -2px -2px 4px rgba(0,0,0,.4);
-}
+
 /* Saturn's ring */
 .ring-decor {
-  position: absolute; top: 50%; left: 50%;
+  position: absolute;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%) rotate(-18deg);
-  border: 3px solid rgba(220, 200, 150, .7); border-radius: 50%; pointer-events: none;
+  border: 3px solid rgba(220, 200, 150, .7);
+  border-radius: 50%;
+  pointer-events: none;
 }
-/* Asteroid belt */
-.asteroid-belt { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  border-radius: 50%; animation: orbit-spin linear infinite; }
-.asteroid { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #9a8f7d; }
-/* Comet */
-.comet-orbit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  border-radius: 50%; animation: orbit-spin linear infinite; }
-.comet { position: absolute; top: 50%; left: 100%; transform: translate(-50%, -50%);
-  width: 10px; height: 10px; border-radius: 50%; cursor: pointer; border: none;
-  background: radial-gradient(circle, #dff3ff, #9fd0ff); box-shadow: 0 0 8px #bfe0ff; }
-.comet::after {
-  content: ""; position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
-  width: 46px; height: 4px; border-radius: 4px;
-  background: linear-gradient(90deg, rgba(180,220,255,0), rgba(200,235,255,.9)); pointer-events: none;
-}
-
-/* ---------- Sky from Earth ---------- */
-.sky-scene {
-  position: relative; width: min(94vw, 820px); height: min(60vw, 440px);
-  margin: 0 auto; border-radius: 18px; overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,.5);
-}
-.sky-dome { position: absolute; inset: 0; transition: background 1s linear;
-  background: linear-gradient(180deg, #8ec9ff 0%, #cdeaff 70%); }
-.sky-stars { position: absolute; inset: 0; opacity: 0; transition: opacity 1s; pointer-events: none;
-  background-image:
-    radial-gradient(1px 1px at 15% 20%, #fff, transparent),
-    radial-gradient(1px 1px at 45% 15%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 70% 25%, #fff, transparent),
-    radial-gradient(1px 1px at 85% 12%, #fff, transparent),
-    radial-gradient(1px 1px at 30% 35%, #fff, transparent);
-  background-repeat: no-repeat; }
-.sky-body {
-  position: absolute; font-size: 2.6rem; line-height: 1; border: none; background: none;
-  cursor: pointer; padding: 0; transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 14px rgba(255,220,120,.8));
-}
-.sky-moon { filter: drop-shadow(0 0 12px rgba(200,220,255,.8)); opacity: 0; transition: opacity .8s; }
-.horizon { position: absolute; left: 0; right: 0; bottom: 70px; height: 2px; background: rgba(255,255,255,.35); }
-.ground {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 72px;
-  background: linear-gradient(180deg, #4c8a3f, #2f5e28);
-  display: flex; align-items: center; justify-content: space-around; font-size: 2rem;
-}
-.time-label {
-  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  margin: 0; background: rgba(0,0,0,.35); padding: .3rem .8rem; border-radius: 999px; font-size: .95rem;
-}
-.sky-controls { display: flex; align-items: center; gap: .8rem; justify-content: center; margin-top: 1rem; max-width: 620px; margin-inline: auto; }
-.sky-controls input[type="range"] { flex: 1; accent-color: var(--accent); height: 6px; cursor: pointer; }
-
-/* ---------- Constellations ---------- */
-.constellation-sky {
-  position: relative; width: min(94vw, 860px); height: min(64vw, 520px);
-  margin: 0 auto; border-radius: 18px;
-  background: radial-gradient(ellipse at center, #0a1030, #04060f);
-  box-shadow: inset 0 0 60px rgba(0,0,0,.7); overflow: hidden;
-}
-.constellation-sky svg { width: 100%; height: 100%; display: block; }
-.cst-group { cursor: pointer; }
-.cst-line { stroke: rgba(150, 190, 255, .5); stroke-width: 1.2; }
-.cst-star { fill: #fff; filter: drop-shadow(0 0 4px #cfe3ff); transition: r .15s, fill .15s; }
-.cst-hit { fill: transparent; }
-.cst-group:hover .cst-star, .cst-group:focus-visible .cst-star { fill: var(--accent); r: 5; }
-.cst-group:hover .cst-line { stroke: rgba(255, 213, 74, .8); }
-.cst-label { fill: #cfe3ff; font-size: 13px; font-family: inherit; pointer-events: none; }
-.cst-group:hover .cst-label { fill: var(--accent); }
 
 /* ---------- Details dialog ---------- */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 20; }
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 20;
+}
 .details {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: min(92vw, 420px); max-height: 86vh; overflow-y: auto;
-  background: var(--panel); border: 1px solid rgba(255,255,255,.2); border-radius: 20px;
-  padding: 1.6rem 1.5rem 1.8rem; z-index: 21; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 420px);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  padding: 1.6rem 1.5rem 1.8rem;
+  z-index: 21;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
   animation: pop-in .25s ease;
 }
 @keyframes pop-in {
@@ -265,51 +190,43 @@ main { position: relative; z-index: 1; padding: .5rem 1rem 1rem; }
   to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 .close-btn {
-  position: absolute; top: .8rem; right: .9rem; background: rgba(255,255,255,.12); border: none;
-  color: var(--text); width: 34px; height: 34px; border-radius: 50%; font-size: 1rem; cursor: pointer;
+  position: absolute;
+  top: .8rem; right: .9rem;
+  background: rgba(255,255,255,.12);
+  border: none;
+  color: var(--text);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
 }
 .close-btn:hover { background: rgba(255,255,255,.25); }
 .details-emoji { font-size: 3.2rem; text-align: center; }
 .details h2 { margin: .3rem 0 0; text-align: center; font-size: 1.7rem; }
-.details-name-ko { margin: .1rem 0 1rem; text-align: center; color: var(--ko-color); font-size: 1.1rem; }
+.details-name-ko { margin: .1rem 0 1rem; text-align: center; color: #b9e0ff; font-size: 1.1rem; }
 .facts { list-style: none; margin: 0; padding: 0; }
-.facts li { background: rgba(255,255,255,.06); border-radius: 12px; padding: .7rem .9rem; margin-bottom: .6rem; line-height: 1.4; }
-.facts li .fact-en { display: block; font-weight: 600; }
-.facts li .fact-ko { display: block; color: var(--ko-color); font-size: .92rem; margin-top: .15rem; }
-
-/* ---------- Worksheet (screen-hidden, print-shown) ---------- */
-.worksheet { display: none; }
-.ws-title { text-align: center; }
-.ws-name { margin: .4rem 0 1rem; }
-.ws-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.ws-card { border: 1.5px solid #333; border-radius: 10px; padding: 10px 12px; }
-.ws-card h3 { margin: 0 0 .3rem; }
-.ws-card .ws-fact { margin: .2rem 0; }
-.ws-card .ws-blank { border-bottom: 1px solid #999; min-height: 1.2em; margin-top: .4rem; }
-
-/* ---------- Accessibility: reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  .orbit, .planet, .sun, .stars, .asteroid-belt, .comet-orbit, .meteor { animation: none !important; }
+.facts li {
+  background: rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: .7rem .9rem;
+  margin-bottom: .6rem;
+  line-height: 1.4;
 }
+.facts li .fact-en { display: block; font-weight: 600; }
+.facts li .fact-ko { display: block; color: #b9e0ff; font-size: .92rem; margin-top: .15rem; }
+
+/* ---------- Accessibility: respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .orbit, .planet, .sun, .stars { animation: none !important; }
+}
+/* Class toggled by the Pause button */
 body.motion-paused .orbit,
 body.motion-paused .planet,
 body.motion-paused .sun,
-body.motion-paused .stars,
-body.motion-paused .asteroid-belt,
-body.motion-paused .comet-orbit { animation-play-state: paused; }
+body.motion-paused .stars { animation-play-state: paused; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 480px) {
   .sun { width: 64px; height: 64px; }
   .planet .label { font-size: .6rem; }
-  .nav-btn { font-size: .8rem; padding: .45rem .7rem; }
-}
-
-/* ---------- Print: show only worksheet ---------- */
-@media print {
-  body { background: #fff; color: #000; }
-  .stars, .shooting-stars, .page-header, .page-footer,
-  #view-solar, #view-sky, #view-constellations, .overlay, .details { display: none !important; }
-  .worksheet { display: block !important; }
-  .ws-card { break-inside: avoid; }
 }
